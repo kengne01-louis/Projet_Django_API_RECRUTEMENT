@@ -1,7 +1,5 @@
-from rest_framework import serializers
 from ..models import Candidate, JobOffer, Skill, MatchScore
-
-
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 class MatchingRequestSerializer(serializers.Serializer):
@@ -41,7 +39,7 @@ class JobOfferSerializer(serializers.ModelSerializer):
 
 
 class MatchScoreSerializer(serializers.ModelSerializer):
-    #Champs calculés pour la lisibilité
+    # Champs calculés pour la lisibilité
     candidate_full_name = serializers.SerializerMethodField()
     job_title = serializers.CharField(source='job_offer.title', read_only=True)
 
@@ -53,6 +51,26 @@ class MatchScoreSerializer(serializers.ModelSerializer):
             'experience_score', 'computed_at'
         ]
 
-    def get_candidate_full_name(self, obj):
+    @extend_schema_field(serializers.CharField())
+    def get_candidate_full_name(self, obj) -> str:
         return f"{obj.candidate.first_name} {obj.candidate.last_name}"
 
+
+
+
+
+    from rest_framework import serializers
+
+    class BestMatchSerializer(serializers.Serializer):
+        candidate_id = serializers.IntegerField()
+        name = serializers.CharField()
+        overall_score = serializers.FloatField()
+
+    class JobRecommendationSerializer(serializers.Serializer):
+        job_id = serializers.IntegerField()
+        title = serializers.CharField()
+        company = serializers.CharField()
+        match_score = serializers.FloatField()
+
+    class ProfileAnalysisSerializer(serializers.Serializer):
+        analysis = serializers.DictField()
